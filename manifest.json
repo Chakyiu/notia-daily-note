@@ -1,0 +1,8 @@
+{
+  "id": "daily-notes",
+  "name": "Daily notes",
+  "version": "0.1.0",
+  "author": "Notia",
+  "description": "Opens a note for each day, creating it when needed. Its folder and name are in its settings.",
+  "main": "main.js"
+}

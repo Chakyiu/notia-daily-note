@@ -1,0 +1,8 @@
+{
+  "name": "notia-daily-note",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
