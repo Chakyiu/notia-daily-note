@@ -8,12 +8,19 @@ Settings are kept in this folder's `data.json`. A vault that previously used the
 
 ## Install
 
-Link this folder into a vault:
+Notia loads plugins from `.notia/plugins` inside the vault, one folder per plugin, named after the plugin id. Put this folder there as `daily-notes`.
+
+On macOS and Linux, link it so the code you edit here is what the vault runs:
 
 ```bash
 mkdir -p "/path/to/vault/.notia/plugins"
-ln -s "/Users/chakyiu/Documents/project/github/2026/notia-daily-note" \
-  "/path/to/vault/.notia/plugins/daily-notes"
+ln -s "/path/to/notia-daily-note" "/path/to/vault/.notia/plugins/daily-notes"
+```
+
+On Windows, copy the folder instead — a symlink needs Developer Mode or an elevated shell:
+
+```bat
+xcopy /E /I notia-daily-note "%USERPROFILE%\vault\.notia\plugins\daily-notes"
 ```
 
 Open the vault, then turn **Daily notes** on in **Settings → Plugins**. Saving a file in this folder reloads the plugin.

@@ -7,6 +7,7 @@ import {
   formatHelp,
   localToday,
   noteHeading,
+  vaultPath,
 } from "../lib/dates.js";
 import { DEFAULTS, settingsFrom } from "../lib/settings.js";
 
@@ -37,6 +38,29 @@ test("pads days the way chrono does", () => {
 test("rejects a padding flag on a name", () => {
   assert.equal(formatDate(date, "%-A"), null);
   assert.equal(formatDate(date, "%-F"), null);
+  assert.equal(formatDate(date, "%"), null);
+  assert.equal(formatDate(date, "%Y-%"), null);
+});
+
+test("counts centuries, two-digit years and ISO week-years", () => {
+  assert.equal(formatDate(date, "%C"), "20");
+  assert.equal(formatDate(date, "%y"), "26");
+  assert.equal(formatDate(date, "%g"), "26");
+  assert.equal(formatDate({ y: 2021, m: 1, d: 1 }, "%g"), "20");
+  assert.equal(formatDate({ y: 2000, m: 5, d: 6 }, "%C%y"), "2000");
+});
+
+test("writes the weekday chrono numbers, Sunday included", () => {
+  const sunday = { y: 2026, m: 11, d: 1 };
+  assert.equal(formatDate(sunday, "%A %a"), "Sunday Sun");
+  assert.equal(formatDate(sunday, "%w"), "0");
+  assert.equal(formatDate(sunday, "%u"), "7");
+});
+
+test("keeps a literal percent and trims an empty name", () => {
+  assert.equal(formatDate(date, "100%%"), "100%");
+  assert.equal(formatDate(date, "%%%Y"), "%2026");
+  assert.equal(formatDate(date, "\n"), null);
 });
 
 test("uses ISO weeks and Sunday weeks", () => {
@@ -71,6 +95,18 @@ test("builds the note path and falls back when the format names nothing", () => 
 
 test("writes an English heading without a padded day", () => {
   assert.equal(noteHeading(date), "# Wednesday, November 4, 2026\n\n");
+});
+
+test("normalizes folder paths the way vault paths are", () => {
+  assert.equal(vaultPath("Daily//2026-11-04.md"), "Daily/2026-11-04.md");
+  assert.equal(vaultPath("/Daily/./2026-11-04.md"), "Daily/2026-11-04.md");
+  // `..` segments are dropped, not resolved, so nothing can climb out of the vault.
+  assert.equal(vaultPath("a/../../b.md"), "a/b.md");
+  assert.equal(vaultPath("Daily\\Sub/2026-11-04.md"), "Daily/Sub/2026-11-04.md");
+  assert.equal(
+    dailyNotePath(date, { folder: "Daily\\Sub\\", format: "%Y-%m-%d" }),
+    "Daily/Sub/2026-11-04.md",
+  );
 });
 
 test("shifts across months and years", () => {
